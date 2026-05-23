@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  # PHP Backend
+  app:
+    build: 
+      context: .
+      dockerfile: php.Dockerfile
+    volumes:
+      - ..:/workspaces:cached
+    environment:
+      - DB_HOST=db
+    network_mode: service:db # Shares network with DB for easy access
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=mydatabase
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pass
+    ports:
+      - "3306:3306"
+
+  # React Frontend (Node.js)
+  frontend:
+    image: node:18-bullseye
+    volumes:
+      - ..:/workspaces:cached
+    command: /bin/sh -c "while sleep 1000; do :; done" # Keeps container alive
